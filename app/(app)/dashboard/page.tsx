@@ -57,7 +57,7 @@ export default async function DashboardPage() {
                   </div>
                   <p className="mt-1 text-sm text-slate-500">
                     {[
-                      e.peak,
+                      e.peak !== e.name && e.peak,
                       e.summit_altitude_m && meters(e.summit_altitude_m),
                       `${dayCount} ${dayCount === 1 ? "day" : "days"}`,
                     ]

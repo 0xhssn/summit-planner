@@ -28,14 +28,23 @@ export async function createClient() {
   );
 }
 
+// getClaims verifies the session JWT (locally, with Supabase's asymmetric signing keys) instead of
+// calling the Auth server on every request like getUser does. Data access is still enforced by RLS.
+async function readSession() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  return { supabase, user: claims ? { id: claims.sub, email: claims.email } : null };
+}
+
+// For pages that render differently when signed in, like the landing page.
+export async function getCurrentUser() {
+  return (await readSession()).user;
+}
+
 // Real auth check for pages and server actions. The proxy redirect is only optimistic.
 export async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { supabase, user } = await readSession();
   if (!user) redirect("/login");
-
   return { supabase, user };
 }

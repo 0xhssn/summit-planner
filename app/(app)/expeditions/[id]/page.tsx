@@ -51,7 +51,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
         <h1 className="mt-2 text-2xl font-semibold text-slate-900">{expedition.name}</h1>
         <p className="mt-1 text-sm text-slate-500">
           {[
-            expedition.peak,
+            expedition.peak !== expedition.name && expedition.peak,
             expedition.summit_altitude_m && `summit ${meters(expedition.summit_altitude_m)}`,
             `${itinerary.length} ${itinerary.length === 1 ? "night" : "nights"}`,
             highest !== null && `highest camp ${meters(highest)}`,

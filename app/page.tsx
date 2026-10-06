@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { meters } from "@/lib/format";
-import { TEMPLATES } from "@/lib/templates";
+import { Logo } from "@/app/components/logo";
+import { getCurrentUser } from "@/lib/supabase/server";
 
 // Huayna Potosí, before and after auto-fix, plotted on a shared day axis (see lib/acclimatization.ts).
 const RAW = [3640, 3640, 3640, 4700, 4700, 5130, 3640];
@@ -9,124 +9,141 @@ const x = (day: number) => 40 + day * 60;
 const y = (altitude: number) => 200 - ((altitude - 3400) / (5300 - 3400)) * 180;
 const points = (altitudes: number[]) => altitudes.map((a, i) => `${x(i)},${y(a)}`).join(" ");
 
-const FEATURES = [
-  {
-    title: "Plan it night by night",
-    body: "Each day is a camp and a sleeping altitude. Add, edit and reorder days, or start from a real Karakoram or Andes route.",
-  },
-  {
-    title: "See every risky night",
-    body: "Every night is checked against acclimatization guidelines: too much new altitude, missing rest days, high-risk jumps.",
-  },
-  {
-    title: "Auto-fix the plan",
-    body: "One click splits big jumps with intermediate camps and adds rest days where they're overdue. Then log how it went.",
-  },
-];
+// Deterministic "random" stars so server and client render the same sky.
+const STARS = Array.from({ length: 70 }, (_, i) => ({
+  left: (i * 37.7) % 100,
+  top: (i * 53.3) % 60,
+  size: i % 7 === 0 ? 2 : 1,
+  opacity: 0.25 + (i % 5) * 0.15,
+}));
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
-    <main className="flex-1">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <span className="font-semibold text-slate-900">🏔️ Summit Planner</span>
-        <Link href="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-          Log in
-        </Link>
-      </header>
+    <main className="relative isolate flex min-h-svh flex-col overflow-hidden bg-slate-950 text-white">
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top,#1e3a5f_0%,#0b1220_55%,#020617_100%)]" />
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        {STARS.map((s, i) => (
+          <span
+            key={i}
+            className="absolute rounded-full bg-white"
+            style={{ left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size, opacity: s.opacity }}
+          />
+        ))}
+        <svg
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          className="absolute bottom-0 h-[34svh] w-full"
+        >
+          <path
+            d="M0 210 120 150l90 40 140-110 110 70 70-40 160 120 120-90 150 80 110-60 130 90 140-100 100 60V320H0Z"
+            fill="#13233a"
+          />
+          <path
+            d="M0 250 160 190l120 50 150-90 90 60 130-70 170 110 110-60 160 80 140-90 110 70 100-40V320H0Z"
+            fill="#0c1729"
+          />
+          <path d="M0 290 220 240l180 40 200-60 160 50 210-40 190 50 170-30 110 20V320H0Z" fill="#020617" />
+        </svg>
+      </div>
 
-      <section className="mx-auto grid max-w-5xl items-center gap-10 px-4 pb-16 pt-10 md:grid-cols-2">
+      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5">
+        <Logo tone="light" />
+        {user ? (
+          <Link href="/dashboard" className="text-sm font-medium text-slate-200 hover:text-white">
+            Your expeditions →
+          </Link>
+        ) : (
+          <Link href="/login" className="text-sm font-medium text-slate-200 hover:text-white">
+            Log in
+          </Link>
+        )}
+      </nav>
+
+      <section className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 pb-24 pt-6 md:grid-cols-[1.1fr_1fr] md:pb-32">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wide text-sky-700">
-            For trekkers & climbers heading above 5,000m
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-sky-300/80">
+            02:00 · alpine start · Camp 2, 5,300m
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-            Plan the climb.
+          <h1 className="mt-4 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+            Climb high.
             <br />
-            Respect the altitude.
+            Sleep low.
+            <br />
+            <span className="text-sky-300">Come home.</span>
           </h1>
-          <p className="mt-4 text-lg text-slate-600">
-            Summit Planner checks your high-altitude itinerary night by night, flags the days that will hurt, and
-            re-plans it with rest days and intermediate camps.
+          <p className="mt-6 max-w-md text-lg text-slate-300">
+            Summit Planner reads your itinerary night by night, flags the days that climb too fast, and re-plans
+            them with rest days and acclimatization camps, before the mountain does it for you.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/login"
-              className="rounded-md bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-700"
-            >
-              Start planning
-            </Link>
-            <a
-              href="#routes"
-              className="rounded-md border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 hover:bg-white"
-            >
-              See the routes
-            </a>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-sky-300"
+              >
+                Open your expeditions
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-sky-300"
+                >
+                  Plan your expedition
+                </Link>
+                <Link
+                  href="/login?demo=1"
+                  className="rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10"
+                >
+                  Try the demo
+                </Link>
+              </>
+            )}
           </div>
+          <p className="mt-8 text-sm text-slate-400">
+            Built after losing a summit window on Khosar Gang, 6,040m. Routes from the Karakoram and the Andes.
+          </p>
         </div>
 
-        <figure className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <figcaption className="text-sm font-medium text-slate-700">
-            Huayna Potosí (6,088m), as it&apos;s often sold vs. after auto-fix
+        <figure className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-sm">
+          <figcaption className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="font-medium text-white">Huayna Potosí, 6,088m</span>
+            <span className="text-xs text-slate-400">as it&apos;s often sold vs. auto-fixed</span>
           </figcaption>
-          <svg viewBox="0 0 620 220" className="mt-2 w-full" role="img" aria-label="Elevation profile before and after auto-fix">
+          <svg viewBox="0 0 620 220" className="mt-3 w-full" role="img" aria-label="Elevation profile before and after auto-fix">
             {[3500, 4000, 4500, 5000].map((a) => (
               <g key={a}>
-                <line x1={30} x2={600} y1={y(a)} y2={y(a)} stroke="#e2e8f0" strokeDasharray="3 3" />
-                <text x={0} y={y(a) + 4} fontSize={11} fill="#94a3b8">
+                <line x1={30} x2={600} y1={y(a)} y2={y(a)} stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
+                <text x={0} y={y(a) + 4} fontSize={11} fill="#64748b">
                   {a / 1000}k
                 </text>
               </g>
             ))}
-            <polyline points={points(FIXED)} fill="none" stroke="#059669" strokeWidth={2.5} />
-            <polyline points={points(RAW)} fill="none" stroke="#dc2626" strokeWidth={2} strokeDasharray="6 4" />
-            <circle cx={x(3)} cy={y(4700)} r={6} fill="#dc2626" stroke="#fff" strokeWidth={2} />
-            <text x={x(3) - 8} y={y(4700) - 12} fontSize={12} fill="#b91c1c" textAnchor="end">
+            <polyline points={points(FIXED)} fill="none" stroke="#34d399" strokeWidth={2.5} />
+            <polyline points={points(RAW)} fill="none" stroke="#f87171" strokeWidth={2} strokeDasharray="6 4" />
+            <circle cx={x(3)} cy={y(4700)} r={6} fill="#f87171" stroke="#020617" strokeWidth={2} />
+            <text x={x(3) - 10} y={y(4700) - 12} fontSize={12} fill="#fca5a5" textAnchor="end">
               +1,060m in one night
             </text>
             {FIXED.map((a, i) => (
-              <circle key={i} cx={x(i)} cy={y(a)} r={3} fill="#059669" />
+              <circle key={i} cx={x(i)} cy={y(a)} r={3} fill="#34d399" />
             ))}
           </svg>
-          <div className="mt-2 flex gap-4 text-xs text-slate-500">
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
-              <span className="h-0.5 w-4 bg-red-600" /> La Paz straight to base camp: high risk
+              <span className="h-0.5 w-4 bg-red-400" /> City to base camp in a day: high risk
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-0.5 w-4 bg-emerald-600" /> 2 stops + 1 rest day: low risk
+              <span className="h-0.5 w-4 bg-emerald-400" /> 2 camps + 1 rest day: low risk
             </span>
           </div>
         </figure>
       </section>
 
-      <section className="border-y border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 md:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div key={f.title}>
-              <h2 className="font-semibold text-slate-900">{f.title}</h2>
-              <p className="mt-2 text-sm text-slate-600">{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="routes" className="mx-auto max-w-5xl px-4 py-12">
-        <h2 className="text-lg font-semibold text-slate-900">Start from a real route</h2>
-        <ul className="mt-4 grid gap-3 md:grid-cols-3">
-          {TEMPLATES.map((t) => (
-            <li key={t.slug} className="rounded-lg border border-slate-200 bg-white p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{t.region}</p>
-              <h3 className="mt-1 font-medium text-slate-900">{t.name}</h3>
-              <p className="mt-1 text-sm text-slate-500">
-                {meters(t.summit_altitude_m)} · {t.days.length} days
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <footer className="mx-auto max-w-5xl px-4 pb-10 text-xs text-slate-400">
-        Built by a trekker who turned back on Khosar Gang. Rules are simplified from Wilderness Medical Society
-        guidance; this is a planning aid, not medical advice.
+      <footer className="absolute inset-x-0 bottom-0 px-4 py-4 text-center text-xs text-slate-500">
+        Rules simplified from Wilderness Medical Society guidance. A planning aid, not medical advice.
       </footer>
     </main>
   );
