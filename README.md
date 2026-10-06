@@ -7,7 +7,7 @@ Plan a high-altitude trek day by day and instantly see whether your acclimatizat
 
 ## Who it's for
 
-Trekkers and climbers planning 5,000–6,000m objectives like K2 Base Camp, Gondogoro La, Khosar Gang or Huayna Potosí, who want a sanity check on their itinerary before they go. Most altitude trouble comes from a plan that climbs too fast, and that's visible on paper weeks before anyone gets a headache. The seeded routes come from real Karakoram and Andes itineraries, including a Khosar Gang trip I turned back on.
+Trekkers and climbers planning any high-altitude objective, from 4,000m passes to 8,000m peaks (K2 Base Camp, Gondogoro La, Khosar Gang, Huayna Potosí and beyond), who want a sanity check on their itinerary before they go. Most altitude trouble comes from a plan that climbs too fast, and that's visible on paper weeks before anyone gets a headache. The seeded routes come from real Karakoram and Andes itineraries, including a Khosar Gang trip I turned back on.
 
 ## What works
 
