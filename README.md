@@ -20,6 +20,7 @@ Trekkers and climbers planning 5,000–6,000m objectives like K2 Base Camp, Gond
 - **Outcome tracking:** mark an expedition summited or turned back, with a note.
 - **Feedback on every action:** success and error toasts (sonner). Server actions return `{ ok, message }` through `attempt()` in `lib/action-result.ts` instead of throwing, because Next hides thrown messages in production.
 - Landing page, empty states, not-found and loading states, and an error boundary.
+- **Light and dark themes:** a header toggle, saved in a cookie so the server renders the right theme with no flash; until you pick one it follows the OS. Colors are tokens in `app/globals.css`. Pages, itinerary rows and the theme switch animate with view transitions, and deleting an expedition asks for confirmation in a dialog.
 
 ## The core logic: `lib/acclimatization.ts`
 

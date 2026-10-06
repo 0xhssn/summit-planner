@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { BUTTON } from "@/app/components/ui";
 import { useActionToast } from "@/app/components/use-action-toast";
 import { autoFixItinerary } from "./actions";
 
@@ -14,7 +15,7 @@ export function AutoFix({ expeditionId, canFix }: { expeditionId: string; canFix
     <button
       onClick={() => startTransition(() => run(autoFixItinerary(expeditionId)).then(() => {}))}
       disabled={pending}
-      className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
+      className={`${BUTTON.primary} disabled:cursor-wait disabled:opacity-60`}
     >
       {pending ? "Re-planning…" : "Auto-fix itinerary"}
     </button>
