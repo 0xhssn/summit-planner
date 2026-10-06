@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from "sonner";
+import { cookies } from "next/headers";
+import { ThemedToaster } from "@/app/components/theme";
+import { parseTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,15 +20,18 @@ export const metadata: Metadata = {
   description: "Plan a high-altitude trek day by day and check your acclimatization.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+
   return (
     <html
       lang="en"
+      data-theme={theme ?? undefined}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-slate-50 text-slate-900">
+      <body className="flex min-h-full flex-col bg-canvas text-fg">
         {children}
-        <Toaster position="top-center" richColors closeButton />
+        <ThemedToaster theme={theme} />
       </body>
     </html>
   );

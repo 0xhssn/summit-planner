@@ -10,13 +10,12 @@ export function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
   );
 }
 
-export function Logo({ tone = "dark" }: { tone?: "dark" | "light" }) {
+// The wordmark follows the theme; pass a text color to override it (the landing hero is always dark).
+export function Logo({ className = "text-fg" }: { className?: string }) {
   return (
     <span className="flex items-center gap-2">
       <LogoMark />
-      <span className={`font-semibold tracking-tight ${tone === "light" ? "text-white" : "text-slate-900"}`}>
-        Summit Planner
-      </span>
+      <span className={`font-semibold tracking-tight ${className}`}>Summit Planner</span>
     </span>
   );
 }

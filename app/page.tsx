@@ -49,13 +49,13 @@ export default async function Home() {
       </div>
 
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5">
-        <Logo tone="light" />
+        <Logo className="text-white" />
         {user ? (
-          <Link href="/dashboard" className="text-sm font-medium text-slate-200 hover:text-white">
+          <Link href="/dashboard" className="text-sm font-medium text-slate-200 transition-colors hover:text-white">
             Your expeditions →
           </Link>
         ) : (
-          <Link href="/login" className="text-sm font-medium text-slate-200 hover:text-white">
+          <Link href="/login" className="text-sm font-medium text-slate-200 transition-colors hover:text-white">
             Log in
           </Link>
         )}
@@ -81,7 +81,7 @@ export default async function Home() {
             {user ? (
               <Link
                 href="/dashboard"
-                className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-sky-300"
+                className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-sky-300"
               >
                 Open your expeditions
               </Link>
@@ -89,13 +89,13 @@ export default async function Home() {
               <>
                 <Link
                   href="/login"
-                  className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-sky-300"
+                  className="rounded-md bg-sky-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-sky-300"
                 >
                   Plan your expedition
                 </Link>
                 <Link
                   href="/login?demo=1"
-                  className="rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white hover:bg-white/10"
+                  className="rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
                 >
                   Try the demo
                 </Link>

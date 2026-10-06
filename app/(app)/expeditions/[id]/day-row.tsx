@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "@/app/components/icons";
 import { PendingButton } from "@/app/components/pending-button";
 import { useActionToast } from "@/app/components/use-action-toast";
 import { SEVERITY_STYLES } from "@/app/components/risk";
+import { ICON_BUTTON } from "@/app/components/ui";
 import type { Flag } from "@/lib/acclimatization";
 import { signedMeters } from "@/lib/format";
 import type { Day } from "@/lib/types";
@@ -20,10 +22,7 @@ type Props = {
 
 // Visible borders on touch screens (no hover to discover them); quiet until hover on desktop.
 const editable =
-  "rounded border border-slate-200 px-2 py-1 text-sm text-slate-900 focus:border-slate-400 focus:outline-none sm:border-transparent sm:hover:border-slate-200";
-
-const iconButton =
-  "rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 hover:bg-slate-100";
+  "rounded-md border border-line bg-transparent px-2 py-1 text-sm text-fg outline-none transition-[border-color,box-shadow] focus:border-accent focus:ring-3 focus:ring-focus sm:border-transparent sm:hover:border-line-strong";
 
 export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props) {
   const [dirty, setDirty] = useState(false);
@@ -37,16 +36,19 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
 
   const worst = flags.some((f) => f.severity === "high") ? "high" : flags.length ? "warning" : null;
   const accent =
-    worst === "high" ? "border-l-red-500" : worst === "warning" ? "border-l-amber-400" : "border-l-transparent";
+    worst === "high" ? "border-l-danger" : worst === "warning" ? "border-l-warning" : "border-l-transparent";
 
   return (
-    <li data-flagged={flags.length > 0 ? "true" : undefined} className={`border-l-4 ${accent}`}>
+    <li
+      data-flagged={flags.length > 0 ? "true" : undefined}
+      className={`border-l-4 bg-surface transition-colors hover:bg-surface-subtle ${accent}`}
+    >
       <form
         action={save}
         onChange={() => setDirty(true)}
-        className="grid grid-cols-[2rem_1fr] items-center gap-x-2 gap-y-1 px-3 py-2 sm:grid-cols-[2.5rem_1fr_7rem_5rem_auto]"
+        className="grid grid-cols-[2rem_1fr] items-center gap-x-2 gap-y-1 px-3 py-2 sm:grid-cols-[2.5rem_1fr_7rem_5rem_9rem]"
       >
-        <span className="text-sm font-medium text-slate-400">D{index + 1}</span>
+        <span className="text-sm font-medium tabular-nums text-fg-subtle">D{index + 1}</span>
         <input
           name="camp_name"
           defaultValue={day.camp_name}
@@ -67,14 +69,14 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
               aria-label={`Day ${index + 1} sleeping altitude in meters`}
               className={`w-full text-right tabular-nums ${editable}`}
             />
-            <span className="text-xs text-slate-400">m</span>
+            <span className="text-xs text-fg-subtle">m</span>
           </div>
-          <span className="text-right text-sm tabular-nums text-slate-500">
+          <span className="text-right text-sm tabular-nums text-fg-muted">
             {gain === null ? "start" : signedMeters(gain)}
           </span>
-          <div className="ml-auto flex justify-end gap-1">
+          <div className="ml-auto flex items-center justify-end gap-1">
             {dirty && (
-              <PendingButton className="rounded bg-slate-900 px-2 py-1 text-xs font-medium text-white hover:bg-slate-700">
+              <PendingButton className="mr-1 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-fg transition hover:bg-primary-hover starting:scale-90 starting:opacity-0">
                 Save
               </PendingButton>
             )}
@@ -83,26 +85,29 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
               formNoValidate
               disabled={index === 0}
               aria-label="Move day up"
-              className={iconButton}
+              title="Move up"
+              className={ICON_BUTTON.default}
             >
-              ↑
+              <ChevronUpIcon className="size-4" />
             </PendingButton>
             <PendingButton
               formAction={() => run(moveDay(expeditionId, day.id, "down")).then(() => {})}
               formNoValidate
               disabled={isLast}
               aria-label="Move day down"
-              className={iconButton}
+              title="Move down"
+              className={ICON_BUTTON.default}
             >
-              ↓
+              <ChevronDownIcon className="size-4" />
             </PendingButton>
             <PendingButton
               formAction={() => run(deleteDay(expeditionId, day.id)).then(() => {})}
               formNoValidate
               aria-label="Delete day"
-              className={`${iconButton} hover:border-red-200 hover:bg-red-50 hover:text-red-700`}
+              title="Delete day"
+              className={ICON_BUTTON.danger}
             >
-              ✕
+              <TrashIcon className="size-4" />
             </PendingButton>
           </div>
         </div>
@@ -110,7 +115,7 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
       {flags.length > 0 && (
         <ul className="flex flex-wrap gap-1.5 pb-2 pl-[3.25rem] pr-3 sm:pl-[3.75rem]">
           {flags.map((f) => (
-            <li key={f.code} className={`rounded px-2 py-0.5 text-xs ring-1 ring-inset ${SEVERITY_STYLES[f.severity]}`}>
+            <li key={f.code} className={`rounded-md px-2 py-0.5 text-xs ring-1 ring-inset ${SEVERITY_STYLES[f.severity]}`}>
               {f.message}
             </li>
           ))}

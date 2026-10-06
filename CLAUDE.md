@@ -31,7 +31,7 @@ No e2e or component tests yet (see Decisions). Until they exist, verify UI and s
 - `lib/supabase/server.ts`: `createClient()`, `requireUser()`, `getCurrentUser()`.
 - `proxy.ts` and `lib/supabase/proxy.ts`: session refresh and the optimistic redirect for `PROTECTED_PREFIXES`.
 - `app/(app)/`: the signed-in shell. `dashboard/` and `expeditions/[id]/` each keep an `actions.ts` beside the page.
-- `app/components/`: `ActionForm`, `PendingButton`, `useActionToast`, risk styles, and `useTour`/`TourButton` (driver.js product tour).
+- `app/components/`: `ActionForm`, `PendingButton`, `useActionToast`, risk styles, shared `BUTTON`/`ICON_BUTTON`/`INPUT` classes (`ui.ts`), icons, `ThemeToggle` and `PageTransition`, and `useTour`/`TourButton` (driver.js product tour).
 - `supabase/migrations/`: schema and RLS, applied by hand in the Supabase SQL editor. No Supabase CLI, no generated DB types.
 
 ## Next.js 16 here
@@ -63,7 +63,9 @@ Your training data is probably Next 14/15. Read the bundled docs in `node_module
 - Rule numbers live in `RULES`, but the editor's explainer, the README and the landing hero restate them by hand. Change them together (`acclimatization-engine` skill).
 
 **UI**
-- Tailwind utility classes inline, no component library. Slate neutrals; emerald, amber and red for low, warning/moderate and high. Reuse `RISK_STYLES` and `SEVERITY_STYLES` from `app/components/risk.tsx`.
+- Tailwind utility classes inline, no component library. Colors are theme tokens from `app/globals.css` (`bg-surface`, `border-line`, `text-fg-muted`, `bg-danger-soft`, ...) so light and dark both work; don't use raw palette colors like `slate-900` outside the landing hero. Success, warning and danger mean low, warning/moderate and high. Reuse `RISK_STYLES` and `SEVERITY_STYLES` from `app/components/risk.tsx`, and `BUTTON`/`INPUT` from `app/components/ui.ts`.
+- The theme comes from the `theme` cookie (`lib/theme.ts`), rendered as `<html data-theme>`; with no cookie it follows the OS. `dark:` follows the same rule. Charts and other inline colors use the CSS variables (`var(--fg-muted)`).
+- Motion uses React `<ViewTransition>`: `PageTransition` around each page's content, `skeleton-exit` on the loading state, and one per itinerary row so moves animate. The CSS is at the end of `globals.css` and respects `prefers-reduced-motion`.
 - Meters everywhere. Format with `meters()` and `signedMeters()` from `lib/format.ts`.
 - Check phone width: day rows reflow below `sm`.
 - Every user action gets a toast. Copy is plain, second person, with a little mountaineering flavor.

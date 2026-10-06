@@ -21,6 +21,7 @@ Trekkers and climbers planning any high-altitude objective, from 4,000m passes t
 - **Guided product tour** (driver.js): it starts automatically on a first visit to the dashboard, walks through expeditions, routes and planning, then opens the riskiest plan and continues in the editor (verdict, chart, flags, auto-fix, outcome). Replay it any time from the header's **Tour** button.
 - **Feedback on every action:** success and error toasts (sonner). Server actions return `{ ok, message }` through `attempt()` in `lib/action-result.ts` instead of throwing, because Next hides thrown messages in production.
 - Landing page, empty states, not-found and loading states, and an error boundary.
+- **Light and dark themes:** a header toggle, saved in a cookie so the server renders the right theme with no flash; until you pick one it follows the OS. Colors are tokens in `app/globals.css`. Pages, itinerary rows and the theme switch animate with view transitions, and deleting an expedition asks for confirmation in a dialog.
 
 ## The core logic: `lib/acclimatization.ts`
 

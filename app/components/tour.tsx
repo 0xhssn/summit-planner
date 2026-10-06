@@ -85,7 +85,7 @@ export function TourButton() {
       type="button"
       data-tour="tour-button"
       onClick={() => window.dispatchEvent(new Event(START_TOUR_EVENT))}
-      className="rounded-md px-2.5 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      className="h-8 rounded-md px-2.5 text-sm text-fg-secondary transition-colors hover:bg-surface-hover hover:text-fg"
     >
       Tour
     </button>
