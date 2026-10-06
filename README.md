@@ -18,6 +18,7 @@ Trekkers and climbers planning any high-altitude objective, from 4,000m passes t
 - **Acclimatization engine:** per-night flags and an overall risk (low, moderate or high), with an explainer of the rules.
 - **Auto-fix:** one click re-plans the itinerary with intermediate camps and rest days, saves it, and reports what changed.
 - **Outcome tracking:** mark an expedition summited or turned back, with a note.
+- **Guided product tour** (driver.js): it starts automatically on a first visit to the dashboard, walks through expeditions, routes and planning, then opens the riskiest plan and continues in the editor (verdict, chart, flags, auto-fix, outcome). Replay it any time from the header's **Tour** button.
 - **Feedback on every action:** success and error toasts (sonner). Server actions return `{ ok, message }` through `attempt()` in `lib/action-result.ts` instead of throwing, because Next hides thrown messages in production.
 - Landing page, empty states, not-found and loading states, and an error boundary.
 

@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { ActionForm } from "@/app/components/action-form";
 import { PendingButton } from "@/app/components/pending-button";
-import { RiskBadge } from "@/app/components/risk";
-import { analyze } from "@/lib/acclimatization";
+import { RISK_STYLES, RiskBadge } from "@/app/components/risk";
+import { analyze, type Risk } from "@/lib/acclimatization";
 import { meters } from "@/lib/format";
 import { requireUser } from "@/lib/supabase/server";
 import { TEMPLATES } from "@/lib/templates";
 import type { ExpeditionStatus } from "@/lib/types";
 import { cloneTemplate, createExpedition } from "./actions";
+import { DashboardTour } from "./dashboard-tour";
 
 const STATUS_STYLES: Record<ExpeditionStatus, { label: string; className: string }> = {
   planning: { label: "Planning", className: "bg-slate-100 text-slate-700" },
@@ -22,8 +23,31 @@ export default async function DashboardPage() {
     .select("id, name, peak, summit_altitude_m, status, outcome_note, days(day_index, camp_name, sleep_altitude_m)")
     .order("created_at", { ascending: false });
 
+  const cards = (expeditions ?? []).map((e) => {
+    const days = [...e.days].sort((a, b) => a.day_index - b.day_index);
+    return { ...e, dayCount: days.length, risk: days.length > 1 ? analyze(days).risk : null };
+  });
+
+  // The tour continues into the riskiest plan, so the editor tour has flags to point at.
+  const riskOrder: Risk[] = ["high", "moderate", "low"];
+  const tourNext =
+    riskOrder
+      .map((r) => cards.find((c) => c.status === "planning" && c.risk === r))
+      .find(Boolean) ?? cards[0];
+
   return (
     <div className="space-y-12">
+      <DashboardTour
+        next={
+          tourNext
+            ? {
+                href: `/expeditions/${tourNext.id}`,
+                name: tourNext.name,
+                riskLabel: tourNext.risk ? RISK_STYLES[tourNext.risk].label : "unchecked",
+              }
+            : null
+        }
+      />
       <section>
         <h1 className="text-2xl font-semibold text-slate-900">Your expeditions</h1>
         {error && (
@@ -34,16 +58,15 @@ export default async function DashboardPage() {
             No expeditions yet. Start from a classic route below, or plan your own from scratch.
           </p>
         )}
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {expeditions?.map((e) => {
+        <ul data-tour={cards.length ? "expeditions" : undefined} className="mt-4 grid gap-3 sm:grid-cols-2">
+          {cards.map((e) => {
             const status = STATUS_STYLES[e.status as ExpeditionStatus];
-            const days = [...e.days].sort((a, b) => a.day_index - b.day_index);
-            const dayCount = days.length;
-            const risk = dayCount > 1 ? analyze(days).risk : null;
+            const { dayCount, risk } = e;
             return (
               <li key={e.id}>
                 <Link
                   href={`/expeditions/${e.id}`}
+                  data-tour-next={e.id === tourNext?.id ? "true" : undefined}
                   className="block rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-400"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -79,7 +102,7 @@ export default async function DashboardPage() {
         <p className="mt-1 text-sm text-slate-500">
           Real itineraries with real camp altitudes. Clone one, then tweak it day by day.
         </p>
-        <ul className="mt-4 grid gap-3 md:grid-cols-3">
+        <ul data-tour="templates" className="mt-4 grid gap-3 md:grid-cols-3">
           {TEMPLATES.map((t) => (
             <li key={t.slug} className="flex flex-col rounded-lg border border-slate-200 bg-white p-4">
               <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{t.region}</p>
@@ -102,6 +125,7 @@ export default async function DashboardPage() {
       <section>
         <h2 className="text-lg font-semibold text-slate-900">Plan from scratch</h2>
         <ActionForm
+          data-tour="scratch"
           action={createExpedition}
           className="mt-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[2fr_2fr_1fr_auto] sm:items-end"
         >

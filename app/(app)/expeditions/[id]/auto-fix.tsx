@@ -12,6 +12,7 @@ export function AutoFix({ expeditionId, canFix }: { expeditionId: string; canFix
 
   return (
     <button
+      data-tour="auto-fix"
       onClick={() => startTransition(() => run(autoFixItinerary(expeditionId)).then(() => {}))}
       disabled={pending}
       className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
