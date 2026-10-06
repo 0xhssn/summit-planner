@@ -26,7 +26,7 @@ No e2e or component tests. Verify UI and server-action changes by running the ap
 - `lib/supabase/server.ts`: `createClient()`, `requireUser()`, `getCurrentUser()`.
 - `proxy.ts` and `lib/supabase/proxy.ts`: session refresh and the optimistic redirect for `PROTECTED_PREFIXES`.
 - `app/(app)/`: the signed-in shell. `dashboard/` and `expeditions/[id]/` each keep an `actions.ts` beside the page.
-- `app/components/`: `ActionForm`, `PendingButton`, `useActionToast`, risk styles.
+- `app/components/`: `ActionForm`, `PendingButton`, `useActionToast`, risk styles, and `useTour`/`TourButton` (driver.js product tour).
 - `supabase/migrations/`: schema and RLS, applied by hand in the Supabase SQL editor. No Supabase CLI, no generated DB types.
 
 ## Next.js 16 here
@@ -62,6 +62,7 @@ Your training data is probably Next 14/15. Read the bundled docs in `node_module
 - Meters everywhere. Format with `meters()` and `signedMeters()` from `lib/format.ts`.
 - Check phone width: day rows reflow below `sm`.
 - Every user action gets a toast. Copy is plain, second person, with a little mountaineering flavor.
+- The product tour anchors on `data-tour` attributes (and `data-flagged` / `data-tour-next`). Keep them when restructuring a page, and update the step copy in `dashboard/dashboard-tour.tsx` or `expeditions/[id]/expedition-tour.tsx` when the UI it describes changes.
 
 ## Workflow
 
