@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   const { supabase } = await requireUser();
   const { data: expeditions, error } = await supabase
     .from("expeditions")
-    .select("id, name, peak, summit_altitude_m, status, days(day_index, camp_name, sleep_altitude_m)")
+    .select("id, name, peak, summit_altitude_m, status, outcome_note, days(day_index, camp_name, sleep_altitude_m)")
     .order("created_at", { ascending: false });
 
   return (
@@ -63,6 +63,9 @@ export default async function DashboardPage() {
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
+                  {e.outcome_note && e.status !== "planning" && (
+                    <p className="mt-2 line-clamp-2 text-sm italic text-slate-600">“{e.outcome_note}”</p>
+                  )}
                 </Link>
               </li>
             );

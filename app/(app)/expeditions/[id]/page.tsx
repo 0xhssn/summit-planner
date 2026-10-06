@@ -11,6 +11,7 @@ import { addDay } from "./actions";
 import { AutoFix } from "./auto-fix";
 import { DayRow } from "./day-row";
 import { ElevationChart } from "./elevation-chart";
+import { OutcomeBanner, OutcomeForm } from "./outcome";
 
 export default async function ExpeditionPage({ params }: PageProps<"/expeditions/[id]">) {
   const { id } = await params;
@@ -58,6 +59,8 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
             .join(" · ")}
         </p>
       </div>
+
+      <OutcomeBanner expedition={expedition} />
 
       {itinerary.length > 1 && (
         <section className={`rounded-lg border p-4 ${riskStyle.banner}`}>
@@ -165,6 +168,8 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
           </PendingButton>
         </form>
       </section>
+
+      <OutcomeForm expedition={expedition} />
 
       <details className="text-sm">
         <summary className="cursor-pointer text-slate-400 hover:text-slate-600">Delete expedition</summary>

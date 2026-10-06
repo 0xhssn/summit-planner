@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { autoFix } from "@/lib/acclimatization";
 import { requireUser } from "@/lib/supabase/server";
 import { parseAltitude, parseCampName } from "@/lib/validation";
-import type { Day } from "@/lib/types";
+import type { Day, ExpeditionStatus } from "@/lib/types";
 
 async function loadDays(supabase: SupabaseClient, expeditionId: string): Promise<Day[]> {
   const { data, error } = await supabase
@@ -101,4 +101,20 @@ export async function autoFixItinerary(expeditionId: string): Promise<AutoFixSum
   }
 
   return { restDaysAdded, stopsAdded, clean };
+}
+
+const STATUSES: ExpeditionStatus[] = ["planning", "summited", "turned_back"];
+
+export async function setOutcome(expeditionId: string, formData: FormData) {
+  const { supabase } = await requireUser();
+  const status = String(formData.get("status")) as ExpeditionStatus;
+  if (!STATUSES.includes(status)) throw new Error("Pick an outcome.");
+  const outcome_note = String(formData.get("outcome_note") ?? "").trim().slice(0, 500) || null;
+
+  const { error } = await supabase
+    .from("expeditions")
+    .update({ status, outcome_note })
+    .eq("id", expeditionId);
+  if (error) throw new Error(error.message);
+  refresh();
 }
