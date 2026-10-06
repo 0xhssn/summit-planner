@@ -11,11 +11,19 @@ import {
   YAxis,
 } from "recharts";
 import { meters } from "@/lib/format";
+import type { Severity } from "@/lib/acclimatization";
 import type { Day } from "@/lib/types";
 
 const RULES_START_M = 3000;
+const DOT_COLORS = { ok: "#0f172a", warning: "#f59e0b", high: "#dc2626" };
 
-export function ElevationChart({ days, summitAltitude }: { days: Day[]; summitAltitude: number | null }) {
+type Props = {
+  days: Day[];
+  severities: (Severity | null)[];
+  summitAltitude: number | null;
+};
+
+export function ElevationChart({ days, severities, summitAltitude }: Props) {
   const data = days.map((d, i) => ({ day: i + 1, camp: d.camp_name, altitude: d.sleep_altitude_m }));
   const altitudes = days.map((d) => d.sleep_altitude_m);
   const top = Math.max(...altitudes, summitAltitude ?? 0);
@@ -67,7 +75,20 @@ export function ElevationChart({ days, summitAltitude }: { days: Day[]; summitAl
             stroke="#0f172a"
             strokeWidth={2}
             fill="url(#altitudeFill)"
-            dot={{ r: 3, fill: "#0f172a" }}
+            dot={({ cx, cy, index }: { cx?: number; cy?: number; index?: number }) => {
+              const severity = index === undefined ? null : severities[index];
+              return (
+                <circle
+                  key={index}
+                  cx={cx}
+                  cy={cy}
+                  r={severity ? 5 : 3}
+                  fill={DOT_COLORS[severity ?? "ok"]}
+                  stroke="#fff"
+                  strokeWidth={severity ? 1.5 : 0}
+                />
+              );
+            }}
             activeDot={{ r: 5 }}
             isAnimationActive={false}
           />

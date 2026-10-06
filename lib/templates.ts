@@ -71,12 +71,11 @@ export const TEMPLATES: Template[] = [
     summit_altitude_m: 6088,
     region: "Cordillera Real, Bolivia",
     blurb:
-      "The classic 'easiest 6,000er'. La Paz is already at 3,640m, which tempts people into jumping straight to the glacier.",
+      "The classic 'easiest 6,000er'. La Paz sits at 3,640m, which tempts people into jumping straight from the city to the glacier.",
     days: [
       day("La Paz", 3640),
       day("La Paz (rest)", 3640),
-      day("Copacabana, Lake Titicaca", 3840),
-      day("La Paz", 3640),
+      day("La Paz (Chacaltaya day hike)", 3640),
       day("Huayna Potosí Base Camp", 4700),
       day("Base Camp (glacier school)", 4700),
       day("Campo Alto Rocas", 5130),

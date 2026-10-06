@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { autoFix } from "@/lib/acclimatization";
 import { requireUser } from "@/lib/supabase/server";
 import { parseAltitude, parseCampName } from "@/lib/validation";
 import type { Day } from "@/lib/types";
@@ -78,4 +79,26 @@ export async function moveDay(expeditionId: string, dayId: string, direction: "u
   [days[from], days[to]] = [days[to], days[from]];
   await saveOrder(supabase, expeditionId, days);
   refresh();
+}
+
+export type AutoFixSummary = { restDaysAdded: number; stopsAdded: number; clean: boolean };
+
+export async function autoFixItinerary(expeditionId: string): Promise<AutoFixSummary> {
+  const { supabase } = await requireUser();
+  const days = await loadDays(supabase, expeditionId);
+  const { days: fixed, restDaysAdded, stopsAdded, clean } = autoFix(days);
+
+  if (restDaysAdded + stopsAdded > 0) {
+    const positioned = fixed.map((d, i) => ({ ...d, day_index: i, expedition_id: expeditionId }));
+    const existing = positioned.filter((d) => "id" in d);
+    const inserted = positioned.filter((d) => !("id" in d));
+
+    const { error: moveError } = await supabase.from("days").upsert(existing);
+    if (moveError) throw new Error(moveError.message);
+    const { error: insertError } = await supabase.from("days").insert(inserted);
+    if (insertError) throw new Error(insertError.message);
+    refresh();
+  }
+
+  return { restDaysAdded, stopsAdded, clean };
 }

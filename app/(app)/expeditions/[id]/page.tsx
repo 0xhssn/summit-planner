@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PendingButton } from "@/app/components/pending-button";
+import { RISK_STYLES } from "@/app/components/risk";
+import { analyze, RULES } from "@/lib/acclimatization";
 import { meters } from "@/lib/format";
 import { requireUser } from "@/lib/supabase/server";
 import type { Day, Expedition } from "@/lib/types";
 import { deleteExpedition } from "../../dashboard/actions";
 import { addDay } from "./actions";
+import { AutoFix } from "./auto-fix";
 import { DayRow } from "./day-row";
 import { ElevationChart } from "./elevation-chart";
 
@@ -34,6 +37,8 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
   const itinerary = days ?? [];
   const highest = itinerary.length ? Math.max(...itinerary.map((d) => d.sleep_altitude_m)) : null;
   const lastAltitude = itinerary.at(-1)?.sleep_altitude_m;
+  const analysis = analyze(itinerary);
+  const riskStyle = RISK_STYLES[analysis.risk];
 
   return (
     <div className="space-y-8">
@@ -54,10 +59,52 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
         </p>
       </div>
 
+      {itinerary.length > 1 && (
+        <section className={`rounded-lg border p-4 ${riskStyle.banner}`}>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold">{riskStyle.label}</h2>
+              <p className="mt-0.5 text-sm">{riskSummary(analysis.highCount, analysis.warningCount)}</p>
+            </div>
+            <AutoFix expeditionId={expedition.id} canFix={analysis.risk !== "low"} />
+          </div>
+          <details className="mt-3 text-sm">
+            <summary className="cursor-pointer opacity-80 hover:opacity-100">How Summit Planner checks your plan</summary>
+            <ul className="mt-2 list-disc space-y-1 pl-5 opacity-90">
+              <li>
+                Rules start once you sleep above {meters(RULES.thresholdM)}, and only count <em>new</em> altitude:
+                higher than any night so far. Climb high, sleep low rotations are fine.
+              </li>
+              <li>
+                More than {meters(RULES.maxNewAltitudePerNightM)} of new altitude in one night is a warning; more
+                than {meters(RULES.highRiskNewAltitudeM)} is high risk.
+              </li>
+              <li>
+                Take a rest night (no higher than the night before) for every {meters(RULES.restEveryM)} gained.
+              </li>
+              <li>
+                Auto-fix splits big jumps into equal steps of at most {meters(RULES.maxNewAltitudePerNightM)} with
+                intermediate nights, and adds rest nights where they&apos;re overdue.
+              </li>
+            </ul>
+            <p className="mt-2 text-xs opacity-75">
+              A planning aid based on Wilderness Medical Society guidance, not medical advice. Listen to your body:
+              descend if symptoms get worse.
+            </p>
+          </details>
+        </section>
+      )}
+
       <section className="rounded-lg border border-slate-200 bg-white p-4">
         <h2 className="text-sm font-medium text-slate-700">Elevation profile</h2>
         {itinerary.length > 0 ? (
-          <ElevationChart days={itinerary} summitAltitude={expedition.summit_altitude_m} />
+          <ElevationChart
+            days={itinerary}
+            severities={analysis.days.map((d) =>
+              d.flags.some((f) => f.severity === "high") ? "high" : d.flags.length ? "warning" : null,
+            )}
+            summitAltitude={expedition.summit_altitude_m}
+          />
         ) : (
           <p className="py-12 text-center text-sm text-slate-400">
             Add your first night below to see the profile.
@@ -81,7 +128,8 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
               day={day}
               index={i}
               isLast={i === itinerary.length - 1}
-              gain={i === 0 ? null : day.sleep_altitude_m - itinerary[i - 1].sleep_altitude_m}
+              gain={analysis.days[i].gain}
+              flags={analysis.days[i].flags}
             />
           ))}
         </ol>
@@ -128,4 +176,15 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
       </details>
     </div>
   );
+}
+
+function riskSummary(highCount: number, warningCount: number) {
+  if (highCount === 0 && warningCount === 0) {
+    return "No acclimatization flags. This pacing gives your body time to adapt.";
+  }
+  const parts = [
+    highCount && `${highCount} high-risk ${highCount === 1 ? "jump" : "jumps"}`,
+    warningCount && `${warningCount} ${warningCount === 1 ? "warning" : "warnings"}`,
+  ].filter(Boolean);
+  return `${parts.join(" and ")}. Gains like these are how people end up with AMS, HAPE or HACE.`;
 }

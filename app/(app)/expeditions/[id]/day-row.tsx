@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { PendingButton } from "@/app/components/pending-button";
+import { SEVERITY_STYLES } from "@/app/components/risk";
+import type { Flag } from "@/lib/acclimatization";
 import { signedMeters } from "@/lib/format";
 import type { Day } from "@/lib/types";
 import { deleteDay, moveDay, updateDay } from "./actions";
@@ -12,12 +14,13 @@ type Props = {
   index: number;
   isLast: boolean;
   gain: number | null;
+  flags: Flag[];
 };
 
 const iconButton =
   "rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 hover:bg-slate-100";
 
-export function DayRow({ expeditionId, day, index, isLast, gain }: Props) {
+export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props) {
   const [dirty, setDirty] = useState(false);
 
   async function save(formData: FormData) {
@@ -25,8 +28,12 @@ export function DayRow({ expeditionId, day, index, isLast, gain }: Props) {
     setDirty(false);
   }
 
+  const worst = flags.some((f) => f.severity === "high") ? "high" : flags.length ? "warning" : null;
+  const accent =
+    worst === "high" ? "border-l-red-500" : worst === "warning" ? "border-l-amber-400" : "border-l-transparent";
+
   return (
-    <li>
+    <li className={`border-l-4 ${accent}`}>
       <form
         action={save}
         onChange={() => setDirty(true)}
@@ -90,6 +97,15 @@ export function DayRow({ expeditionId, day, index, isLast, gain }: Props) {
           </PendingButton>
         </div>
       </form>
+      {flags.length > 0 && (
+        <ul className="flex flex-wrap gap-1.5 px-3 pb-2 sm:pl-[3.25rem]">
+          {flags.map((f) => (
+            <li key={f.code} className={`rounded px-2 py-0.5 text-xs ring-1 ring-inset ${SEVERITY_STYLES[f.severity]}`}>
+              {f.message}
+            </li>
+          ))}
+        </ul>
+      )}
     </li>
   );
 }

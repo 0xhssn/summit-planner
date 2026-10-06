@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { PendingButton } from "@/app/components/pending-button";
+import { RiskBadge } from "@/app/components/risk";
+import { analyze } from "@/lib/acclimatization";
 import { meters } from "@/lib/format";
 import { requireUser } from "@/lib/supabase/server";
 import { TEMPLATES } from "@/lib/templates";
@@ -16,7 +18,7 @@ export default async function DashboardPage() {
   const { supabase } = await requireUser();
   const { data: expeditions, error } = await supabase
     .from("expeditions")
-    .select("id, name, peak, summit_altitude_m, status, days(count)")
+    .select("id, name, peak, summit_altitude_m, status, days(day_index, camp_name, sleep_altitude_m)")
     .order("created_at", { ascending: false });
 
   return (
@@ -34,7 +36,9 @@ export default async function DashboardPage() {
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {expeditions?.map((e) => {
             const status = STATUS_STYLES[e.status as ExpeditionStatus];
-            const dayCount = e.days[0]?.count ?? 0;
+            const days = [...e.days].sort((a, b) => a.day_index - b.day_index);
+            const dayCount = days.length;
+            const risk = dayCount > 1 ? analyze(days).risk : null;
             return (
               <li key={e.id}>
                 <Link
@@ -43,9 +47,12 @@ export default async function DashboardPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <h2 className="font-medium text-slate-900">{e.name}</h2>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>
-                      {status.label}
-                    </span>
+                    <div className="flex shrink-0 gap-1.5">
+                      {e.status === "planning" && risk && <RiskBadge risk={risk} />}
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${status.className}`}>
+                        {status.label}
+                      </span>
+                    </div>
                   </div>
                   <p className="mt-1 text-sm text-slate-500">
                     {[
