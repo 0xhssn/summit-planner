@@ -11,6 +11,7 @@ import { deleteExpedition } from "../../dashboard/actions";
 import { addDay } from "./actions";
 import { AutoFix } from "./auto-fix";
 import { DayRow } from "./day-row";
+import { ExpeditionTour } from "./expedition-tour";
 import { ElevationChart } from "./elevation-chart";
 import { OutcomeBanner, OutcomeForm } from "./outcome";
 
@@ -44,6 +45,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
 
   return (
     <div className="space-y-8">
+      <ExpeditionTour />
       <div>
         <Link href="/dashboard" className="text-sm text-slate-500 hover:text-slate-800">
           ← All expeditions
@@ -64,7 +66,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
       <OutcomeBanner expedition={expedition} />
 
       {itinerary.length > 1 && (
-        <section className={`rounded-lg border p-4 ${riskStyle.banner}`}>
+        <section data-tour="risk" className={`rounded-lg border p-4 ${riskStyle.banner}`}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="font-semibold">{riskStyle.label}</h2>
@@ -99,7 +101,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
         </section>
       )}
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4">
+      <section data-tour="chart" className="rounded-lg border border-slate-200 bg-white p-4">
         <h2 className="text-sm font-medium text-slate-700">Elevation profile</h2>
         {itinerary.length > 0 ? (
           <ElevationChart
@@ -116,7 +118,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
         )}
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white">
+      <section data-tour="days" className="rounded-lg border border-slate-200 bg-white">
         <div className="hidden grid-cols-[2.5rem_1fr_7rem_5rem_auto] gap-2 border-b border-slate-100 px-3 py-2 text-xs font-medium uppercase tracking-wide text-slate-400 sm:grid">
           <span>Day</span>
           <span className="px-2">Camp</span>
@@ -138,6 +140,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
           ))}
         </ol>
         <ActionForm
+          data-tour="add-day"
           action={addDay.bind(null, expedition.id)}
           className="grid grid-cols-[1fr_7rem_auto] items-end gap-2 border-t border-slate-200 bg-slate-50 p-3"
         >

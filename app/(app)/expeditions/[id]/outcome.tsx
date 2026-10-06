@@ -34,7 +34,7 @@ export function OutcomeBanner({ expedition }: { expedition: Expedition }) {
 
 export function OutcomeForm({ expedition }: { expedition: Expedition }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4">
+    <section data-tour="outcome" className="rounded-lg border border-slate-200 bg-white p-4">
       <h2 className="text-sm font-medium text-slate-700">How did it go?</h2>
       <ActionForm action={setOutcome.bind(null, expedition.id)} className="mt-3 space-y-3">
         <fieldset className="flex flex-wrap gap-2">
