@@ -31,7 +31,12 @@ if (wipeError) throw wipeError;
 
 // Inserted oldest first, so the dashboard (newest first) leads with the high-risk Huayna plan.
 const seeds: { slug: string; status: ExpeditionStatus; outcome_note: string | null }[] = [
-  { slug: "khosar-gang", status: "turned_back", outcome_note: null },
+  {
+    slug: "khosar-gang",
+    status: "turned_back",
+    outcome_note:
+      "Water mismanagement at C1. No water for one day. Next week unfavourable for summit. Summit window lost.",
+  },
   { slug: "k2-gondogoro", status: "planning", outcome_note: null },
   { slug: "huayna-potosi", status: "planning", outcome_note: null },
 ];

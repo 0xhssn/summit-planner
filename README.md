@@ -67,7 +67,6 @@ scripts/seed-demo.mts           resets the demo account
 - **Weather/summit-window ranking** (Open-Meteo) was the stretch goal and isn't started.
 - **Error messages in production:** server actions throw, and Next masks thrown messages in production, so the error boundary shows a generic message. HTML validation catches most bad input first. Next step: return errors through `useActionState`.
 - **Atomicity:** cloning and auto-fix use several PostgREST calls, not one transaction. Cloning cleans up if it fails partway. Next step: move these into Postgres functions called over RPC.
-- **Khosar Gang template:** the camp names are approximate and need replacing with the real camps from my trip.
 - No password reset, no optimistic UI (each edit is a server round trip), no end-to-end tests.
 
 ## Run locally
