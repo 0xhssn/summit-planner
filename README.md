@@ -3,7 +3,7 @@
 Plan a high-altitude trek day by day and instantly see whether your acclimatization is safe.
 
 **Live:** https://summit-planner.vercel.app
-**Demo login:** `demo@summitplanner.dev` / `Summit-bc910de9` (or sign up with any email; no confirmation needed)
+**Demo login:** click **Try the demo** on the landing page, or use `demo@summitplanner.dev` / `Summit-bc910de9`. You can also sign up with any email; no confirmation needed.
 
 ## Who it's for
 
