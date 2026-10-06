@@ -21,6 +21,8 @@ npm run build        # needs .env.local; catches server/client boundary errors t
 
 The only automated tests are for `lib/acclimatization.ts`. Nothing tests pages, server actions, RLS or the UI. If you touched any of those, run the app and exercise the change, including an error path (`run-app` skill).
 
+Adding an e2e suite is the agreed first step before the next feature (Decisions in `CLAUDE.md`). Once it exists, add it to the commands above.
+
 ## Extra checks by kind of change
 
 - **Engine or templates:** the README's rules table, examples and test count still hold, and so do the landing hero's `RAW` and `FIXED` arrays (`acclimatization-engine` skill).

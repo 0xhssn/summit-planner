@@ -63,11 +63,17 @@ supabase/migrations/            schema + RLS
 scripts/seed-demo.mts           resets the demo account
 ```
 
+## Scope decisions
+
+- **UX over stretch features.** The time went into making the core flow feel finished instead of into the stretch goal: a toast for every action, empty, loading and not-found states, an auth-aware landing page, and itinerary rows that work on a phone.
+- **No end-to-end tests yet.** Summit Planner does one thing, and the logic behind it (`lib/acclimatization.ts`) is unit-tested, so end-to-end tests were left out. They're the first next step, before any new feature.
+
 ## What's incomplete / next steps
 
+- **End-to-end tests** for the main flows (sign up, create or clone an expedition, edit and reorder days, auto-fix, record an outcome) come first, before any new feature.
 - **Weather/summit-window ranking** (Open-Meteo) was the stretch goal and isn't started.
 - **Atomicity:** cloning and auto-fix use several PostgREST calls, not one transaction. Cloning cleans up if it fails partway. Next step: move these into Postgres functions called over RPC.
-- No password reset, no optimistic UI (each edit is a server round trip), no end-to-end tests.
+- No password reset, no optimistic UI (each edit is a server round trip).
 
 ## Run locally
 

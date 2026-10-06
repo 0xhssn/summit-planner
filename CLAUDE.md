@@ -15,7 +15,12 @@ Plan a high-altitude trek night by night and flag unsafe acclimatization. Next.j
 | `npm run build` | Needs the Supabase env vars. Safe alongside `next dev` (separate output dirs) |
 | `npm run seed:demo` | **Deletes and re-seeds the shared demo account.** Ask before running |
 
-No e2e or component tests. Verify UI and server-action changes by running the app (`run-app` skill).
+No e2e or component tests yet (see Decisions). Until they exist, verify UI and server-action changes by running the app (`run-app` skill).
+
+## Decisions
+
+- **UX over stretch features.** The stretch goal, weather and summit-window ranking from Open-Meteo, was set aside to polish the core flow: a toast for every action, empty, loading and not-found states, and layouts that work at phone width. Hold new work to that bar.
+- **E2E tests come before the next feature.** They were left out because the app does one thing and that logic is unit-tested in `lib/acclimatization.ts`. Before implementing a new feature, add end-to-end coverage of the existing flows: sign-up and login, creating and cloning expeditions, editing, reordering and deleting days, auto-fix, and outcomes. If you're asked for a feature while there's still no e2e suite, say so and add the suite first unless the user says to skip it. Next's Playwright and Cypress guides are in `node_modules/next/dist/docs/01-app/02-guides/testing/`.
 
 ## Map
 
