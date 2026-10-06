@@ -39,7 +39,10 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
     worst === "high" ? "border-l-danger" : worst === "warning" ? "border-l-warning" : "border-l-transparent";
 
   return (
-    <li className={`border-l-4 bg-surface transition-colors hover:bg-surface-subtle ${accent}`}>
+    <li
+      data-flagged={flags.length > 0 ? "true" : undefined}
+      className={`border-l-4 bg-surface transition-colors hover:bg-surface-subtle ${accent}`}
+    >
       <form
         action={save}
         onChange={() => setDirty(true)}

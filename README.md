@@ -3,11 +3,11 @@
 Plan a high-altitude trek day by day and instantly see whether your acclimatization is safe.
 
 **Live:** https://summit-planner.vercel.app
-**Demo login:** `demo@summitplanner.dev` / `Summit-bc910de9` (or sign up with any email; no confirmation needed)
+**Demo login:** click **Try the demo** on the landing page, or use `demo@summitplanner.dev` / `Summit-bc910de9`. You can also sign up with any email; no confirmation needed.
 
 ## Who it's for
 
-Trekkers and climbers planning 5,000–6,000m objectives like K2 Base Camp, Gondogoro La, Khosar Gang or Huayna Potosí, who want a sanity check on their itinerary before they go. Most altitude trouble comes from a plan that climbs too fast, and that's visible on paper weeks before anyone gets a headache. The seeded routes come from real Karakoram and Andes itineraries, including a Khosar Gang trip I turned back on.
+Trekkers and climbers planning any high-altitude objective, from 4,000m passes to 8,000m peaks (K2 Base Camp, Gondogoro La, Khosar Gang, Huayna Potosí and beyond), who want a sanity check on their itinerary before they go. Most altitude trouble comes from a plan that climbs too fast, and that's visible on paper weeks before anyone gets a headache. The seeded routes come from real Karakoram and Andes itineraries, including a Khosar Gang trip I turned back on.
 
 ## What works
 
@@ -18,6 +18,7 @@ Trekkers and climbers planning 5,000–6,000m objectives like K2 Base Camp, Gond
 - **Acclimatization engine:** per-night flags and an overall risk (low, moderate or high), with an explainer of the rules.
 - **Auto-fix:** one click re-plans the itinerary with intermediate camps and rest days, saves it, and reports what changed.
 - **Outcome tracking:** mark an expedition summited or turned back, with a note.
+- **Guided product tour** (driver.js): it starts automatically on a first visit to the dashboard, walks through expeditions, routes and planning, then opens the riskiest plan and continues in the editor (verdict, chart, flags, auto-fix, outcome). Replay it any time from the header's **Tour** button.
 - **Feedback on every action:** success and error toasts (sonner). Server actions return `{ ok, message }` through `attempt()` in `lib/action-result.ts` instead of throwing, because Next hides thrown messages in production.
 - Landing page, empty states, not-found and loading states, and an error boundary.
 - **Light and dark themes:** a header toggle, saved in a cookie so the server renders the right theme with no flash; until you pick one it follows the OS. Colors are tokens in `app/globals.css`. Pages, itinerary rows and the theme switch animate with view transitions, and deleting an expedition asks for confirmation in a dialog.
@@ -64,11 +65,17 @@ supabase/migrations/            schema + RLS
 scripts/seed-demo.mts           resets the demo account
 ```
 
+## Scope decisions
+
+- **UX over stretch features.** The time went into making the core flow feel finished instead of into the stretch goal: a toast for every action, empty, loading and not-found states, an auth-aware landing page, and itinerary rows that work on a phone.
+- **No end-to-end tests yet.** Summit Planner does one thing, and the logic behind it (`lib/acclimatization.ts`) is unit-tested, so end-to-end tests were left out. They're the first next step, before any new feature.
+
 ## What's incomplete / next steps
 
+- **End-to-end tests** for the main flows (sign up, create or clone an expedition, edit and reorder days, auto-fix, record an outcome) come first, before any new feature.
 - **Weather/summit-window ranking** (Open-Meteo) was the stretch goal and isn't started.
 - **Atomicity:** cloning and auto-fix use several PostgREST calls, not one transaction. Cloning cleans up if it fails partway. Next step: move these into Postgres functions called over RPC.
-- No password reset, no optimistic UI (each edit is a server round trip), no end-to-end tests.
+- No password reset, no optimistic UI (each edit is a server round trip).
 
 ## Run locally
 

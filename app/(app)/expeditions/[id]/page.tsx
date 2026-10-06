@@ -16,6 +16,7 @@ import { AutoFix } from "./auto-fix";
 import { DayRow } from "./day-row";
 import { DeleteExpedition } from "./delete-expedition";
 import { ElevationChart } from "./elevation-chart";
+import { ExpeditionTour } from "./expedition-tour";
 import { OutcomeBanner, OutcomeForm } from "./outcome";
 
 export default async function ExpeditionPage({ params }: PageProps<"/expeditions/[id]">) {
@@ -49,6 +50,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
   return (
     <PageTransition>
       <div className="space-y-8">
+        <ExpeditionTour />
         <div>
           <Link
             href="/dashboard"
@@ -73,7 +75,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
         <OutcomeBanner expedition={expedition} />
 
         {itinerary.length > 1 && (
-          <section className={`rounded-lg border p-4 transition-colors duration-300 ${riskStyle.banner}`}>
+          <section data-tour="risk" className={`rounded-lg border p-4 transition-colors duration-300 ${riskStyle.banner}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="font-semibold">{riskStyle.label}</h2>
@@ -111,7 +113,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
           </section>
         )}
 
-        <section className="rounded-lg border border-line bg-surface p-4 shadow-xs">
+        <section data-tour="chart" className="rounded-lg border border-line bg-surface p-4 shadow-xs">
           <h2 className="text-sm font-medium text-fg-secondary">Elevation profile</h2>
           {itinerary.length > 0 ? (
             <ElevationChart
@@ -126,7 +128,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
           )}
         </section>
 
-        <section className="overflow-hidden rounded-lg border border-line bg-surface shadow-xs">
+        <section data-tour="days" className="overflow-hidden rounded-lg border border-line bg-surface shadow-xs">
           {/* Same columns as DayRow. */}
           <div className="hidden grid-cols-[2.5rem_1fr_7rem_5rem_9rem] gap-2 border-b border-line bg-surface-subtle px-3 py-2 text-xs font-medium uppercase tracking-wide text-fg-subtle sm:grid">
             <span>Day</span>
@@ -151,6 +153,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
             ))}
           </ol>
           <ActionForm
+            data-tour="add-day"
             action={addDay.bind(null, expedition.id)}
             className="grid grid-cols-[1fr_7rem] items-end gap-2 border-t border-line bg-surface-subtle p-3 sm:grid-cols-[1fr_8rem_auto]"
           >
