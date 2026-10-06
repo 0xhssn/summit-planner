@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActionForm } from "@/app/components/action-form";
 import { PendingButton } from "@/app/components/pending-button";
 import { RISK_STYLES } from "@/app/components/risk";
 import { analyze, RULES } from "@/lib/acclimatization";
@@ -136,7 +137,7 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
             />
           ))}
         </ol>
-        <form
+        <ActionForm
           action={addDay.bind(null, expedition.id)}
           className="grid grid-cols-[1fr_7rem_auto] items-end gap-2 border-t border-slate-200 bg-slate-50 p-3"
         >
@@ -166,18 +167,18 @@ export default async function ExpeditionPage({ params }: PageProps<"/expeditions
           <PendingButton className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
             Add day
           </PendingButton>
-        </form>
+        </ActionForm>
       </section>
 
       <OutcomeForm expedition={expedition} />
 
       <details className="text-sm">
         <summary className="cursor-pointer text-slate-400 hover:text-slate-600">Delete expedition</summary>
-        <form action={deleteExpedition.bind(null, expedition.id)} className="mt-2">
+        <ActionForm action={deleteExpedition.bind(null, expedition.id)} className="mt-2">
           <PendingButton className="rounded-md border border-red-300 px-3 py-1.5 text-red-700 hover:bg-red-50">
             Yes, delete {expedition.name} permanently
           </PendingButton>
-        </form>
+        </ActionForm>
       </details>
     </div>
   );

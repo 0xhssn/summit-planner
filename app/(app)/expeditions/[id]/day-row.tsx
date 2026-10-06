@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PendingButton } from "@/app/components/pending-button";
+import { useActionToast } from "@/app/components/use-action-toast";
 import { SEVERITY_STYLES } from "@/app/components/risk";
 import type { Flag } from "@/lib/acclimatization";
 import { signedMeters } from "@/lib/format";
@@ -22,9 +23,11 @@ const iconButton =
 
 export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props) {
   const [dirty, setDirty] = useState(false);
+  const run = useActionToast();
 
   async function save(formData: FormData) {
-    await updateDay(expeditionId, day.id, formData);
+    await run(updateDay(expeditionId, day.id, formData));
+    // React resets the form after the action either way: to the saved values, or back to the old ones.
     setDirty(false);
   }
 
@@ -70,7 +73,7 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
             </PendingButton>
           )}
           <PendingButton
-            formAction={moveDay.bind(null, expeditionId, day.id, "up")}
+            formAction={() => run(moveDay(expeditionId, day.id, "up")).then(() => {})}
             formNoValidate
             disabled={index === 0}
             aria-label="Move day up"
@@ -79,7 +82,7 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
             ↑
           </PendingButton>
           <PendingButton
-            formAction={moveDay.bind(null, expeditionId, day.id, "down")}
+            formAction={() => run(moveDay(expeditionId, day.id, "down")).then(() => {})}
             formNoValidate
             disabled={isLast}
             aria-label="Move day down"
@@ -88,7 +91,7 @@ export function DayRow({ expeditionId, day, index, isLast, gain, flags }: Props)
             ↓
           </PendingButton>
           <PendingButton
-            formAction={deleteDay.bind(null, expeditionId, day.id)}
+            formAction={() => run(deleteDay(expeditionId, day.id)).then(() => {})}
             formNoValidate
             aria-label="Delete day"
             className={`${iconButton} hover:border-red-200 hover:bg-red-50 hover:text-red-700`}

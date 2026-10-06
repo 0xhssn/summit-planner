@@ -8,5 +8,5 @@ export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
-  redirect("/login");
+  redirect(`/login?${new URLSearchParams({ message: "You're logged out. See you at base camp." })}`);
 }

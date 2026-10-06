@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ActionForm } from "@/app/components/action-form";
 import { PendingButton } from "@/app/components/pending-button";
 import { RiskBadge } from "@/app/components/risk";
 import { analyze } from "@/lib/acclimatization";
@@ -88,11 +89,11 @@ export default async function DashboardPage() {
                 {meters(Math.max(...t.days.map((d) => d.sleep_altitude_m)))}
               </p>
               <p className="mt-2 flex-1 text-sm text-slate-600">{t.blurb}</p>
-              <form action={cloneTemplate.bind(null, t.slug)} className="mt-4">
+              <ActionForm action={cloneTemplate.bind(null, t.slug)} className="mt-4">
                 <PendingButton className="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
                   Use this route
                 </PendingButton>
-              </form>
+              </ActionForm>
             </li>
           ))}
         </ul>
@@ -100,7 +101,7 @@ export default async function DashboardPage() {
 
       <section>
         <h2 className="text-lg font-semibold text-slate-900">Plan from scratch</h2>
-        <form
+        <ActionForm
           action={createExpedition}
           className="mt-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-[2fr_2fr_1fr_auto] sm:items-end"
         >
@@ -135,7 +136,7 @@ export default async function DashboardPage() {
           <PendingButton className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
             Create
           </PendingButton>
-        </form>
+        </ActionForm>
       </section>
     </div>
   );

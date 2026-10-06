@@ -18,6 +18,7 @@ Trekkers and climbers planning 5,000–6,000m objectives like K2 Base Camp, Gond
 - **Acclimatization engine:** per-night flags and an overall risk (low, moderate or high), with an explainer of the rules.
 - **Auto-fix:** one click re-plans the itinerary with intermediate camps and rest days, saves it, and reports what changed.
 - **Outcome tracking:** mark an expedition summited or turned back, with a note.
+- **Feedback on every action:** success and error toasts (sonner). Server actions return `{ ok, message }` through `attempt()` in `lib/action-result.ts` instead of throwing, because Next hides thrown messages in production.
 - Landing page, empty states, not-found and loading states, and an error boundary.
 
 ## The core logic: `lib/acclimatization.ts`
@@ -65,7 +66,6 @@ scripts/seed-demo.mts           resets the demo account
 ## What's incomplete / next steps
 
 - **Weather/summit-window ranking** (Open-Meteo) was the stretch goal and isn't started.
-- **Error messages in production:** server actions throw, and Next masks thrown messages in production, so the error boundary shows a generic message. HTML validation catches most bad input first. Next step: return errors through `useActionState`.
 - **Atomicity:** cloning and auto-fix use several PostgREST calls, not one transaction. Cloning cleans up if it fails partway. Next step: move these into Postgres functions called over RPC.
 - No password reset, no optimistic UI (each edit is a server round trip), no end-to-end tests.
 

@@ -1,3 +1,4 @@
+import { ActionForm } from "@/app/components/action-form";
 import { PendingButton } from "@/app/components/pending-button";
 import type { Expedition, ExpeditionStatus } from "@/lib/types";
 import { setOutcome } from "./actions";
@@ -35,7 +36,7 @@ export function OutcomeForm({ expedition }: { expedition: Expedition }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-4">
       <h2 className="text-sm font-medium text-slate-700">How did it go?</h2>
-      <form action={setOutcome.bind(null, expedition.id)} className="mt-3 space-y-3">
+      <ActionForm action={setOutcome.bind(null, expedition.id)} className="mt-3 space-y-3">
         <fieldset className="flex flex-wrap gap-2">
           <legend className="sr-only">Outcome</legend>
           {OPTIONS.map((o) => (
@@ -65,7 +66,7 @@ export function OutcomeForm({ expedition }: { expedition: Expedition }) {
         <PendingButton className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
           Save outcome
         </PendingButton>
-      </form>
+      </ActionForm>
     </section>
   );
 }
